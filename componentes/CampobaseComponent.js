@@ -1,14 +1,76 @@
 import React, { Component } from 'react';
-import Calendario from './CalendarioComponent';
-import DetalleExcursion from './DetalleExcursionComponent';
 import Home from './HomeComponent';
+import QuienesSomos from './QuienesSomosComponent';
+import Calendario from './CalendarioComponent';
+import Contacto from './ContactoComponent';
+import DetalleExcursion from './DetalleExcursionComponent';
 import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
+
+function DrawerNavegador() {
+  return (
+    <Drawer.Navigator
+      drawerStyle={{ backgroundColor: '#c2d3da' }}
+      initialRouteName="Home"
+    >
+      <Drawer.Screen name="Home" component={HomeNavegador} />
+      <Drawer.Screen name="Quiénes somos" component={QuienesSomosNavegador} />
+      <Drawer.Screen name="Calendario" component={CalendarioNavegador} />
+      <Drawer.Screen name="Contacto" component={ContactoNavegador} />
+    </Drawer.Navigator>
+  );
+}
+
+function HomeNavegador() {
+  return (
+    <Stack.Navigator
+      initialRouteName="Home"
+      headerMode="screen"
+      screenOptions={{
+        headerTintColor: '#fff',
+        headerStyle: { backgroundColor: '#015afc' },
+        headerTitleStyle: { color: '#fff' },
+        headerTitleAlign: 'center'
+      }}
+    >
+      <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{
+          title: 'Campo Base',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function QuienesSomosNavegador() {
+  return (
+    <Stack.Navigator
+      initialRouteName="Quiénes somos"
+      headerMode="screen"
+      screenOptions={{
+        headerTintColor: '#fff',
+        headerStyle: { backgroundColor: '#015afc' },
+        headerTitleStyle: { color: '#fff' },
+        headerTitleAlign: 'center'
+      }}
+    >
+      <Stack.Screen
+        name="Quiénes somos"
+        component={QuienesSomos}
+        options={{
+          title: 'Quiénes somos',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 function CalendarioNavegador() {
   return (
@@ -19,6 +81,7 @@ function CalendarioNavegador() {
         headerTintColor: '#fff',
         headerStyle: { backgroundColor: '#015afc' },
         headerTitleStyle: { color: '#fff' },
+        headerTitleAlign: 'center'
       }}
     >
       <Stack.Screen
@@ -39,39 +102,26 @@ function CalendarioNavegador() {
   );
 }
 
-function HomeNavegador() {
+function ContactoNavegador() {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Quiénes somos"
       headerMode="screen"
       screenOptions={{
         headerTintColor: '#fff',
         headerStyle: { backgroundColor: '#015afc' },
         headerTitleStyle: { color: '#fff' },
+        headerTitleAlign: 'center'
       }}
     >
       <Stack.Screen
-        name="Home"
-        component={Home}
+        name="Contacto"
+        component={Contacto}
         options={{
-          title: 'Campo Base',
+          title: 'Contacto',
         }}
       />
     </Stack.Navigator>
-  );
-}
-
-function DrawerNavegador() {
-  return (
-    <Drawer.Navigator
-      drawerStyle={{
-        backgroundColor: '#c2d3da',
-      }}
-      initialRouteName="Home"
-    >
-      <Drawer.Screen name="Home" component={HomeNavegador} />
-      <Drawer.Screen name="Calendario" component={CalendarioNavegador} />
-    </Drawer.Navigator>
   );
 }
 
