@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { EXCURSIONES } from '../comun/excursiones';
+import { baseUrl } from '../comun/comun';
 
 class Calendario extends Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class Calendario extends Component {
                         subtitle={item.descripcion}
                         hideChevron={true}
                         onPress={() => navigate('DetalleExcursion', { excursionId: item.id })}
-                        leftAvatar={{ source: require('./imagenes/40Años.png')}}
+                        leftAvatar={{ source: { uri: baseUrl + item.imagen }}}
                     />
             );
         }

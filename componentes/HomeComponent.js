@@ -4,6 +4,7 @@ import { Card } from 'react-native-elements';
 import { EXCURSIONES } from '../comun/excursiones';
 import { CABECERAS } from '../comun/cabeceras';
 import { ACTIVIDADES } from '../comun/actividades';
+import { baseUrl } from '../comun/comun';
 
 function RenderItem(props) {
 
@@ -13,7 +14,7 @@ function RenderItem(props) {
         return (
             <Card
                 featuredTitle={item.nombre}
-                image={require('./imagenes/40Años.png')}>
+                image={{ uri: baseUrl + item.imagen }}>
                 <Text
                     style={{ margin: 10 }}>
                     {item.descripcion}</Text>
