@@ -154,9 +154,7 @@ export const addFavorito = (excursionId) => ({
 });
 
 export const postComentario = (excursionId, valoracion, autor, comentario) => (dispatch) => {
-    let dia = new Date().toISOString()
-    console.log(excursionId);
-    console.log(dia);
+    let dia = new Date().toISOString();
     setTimeout(() => {
         dispatch(addComentario(excursionId, valoracion, autor, comentario, dia));
     }, 2000);
@@ -165,4 +163,9 @@ export const postComentario = (excursionId, valoracion, autor, comentario) => (d
 export const addComentario = (excursionId, valoracion, autor, comentario, dia) => ({
     type: ActionTypes.ADD_COMENTARIO,
     payload: { "autor": autor, "comentario": comentario, "dia": dia, "excursionId": excursionId, "id": "id", "valoracion": valoracion }
+});
+
+export const borrarFavorito = (excursionId) => ({
+    type: ActionTypes.BORRAR_FAVORITO,
+    payload: excursionId
 });
