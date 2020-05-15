@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal } from 'react-native';
 import DatePicker from 'react-native-datepicker'
 import { colorGaztaroaOscuro } from '../comun/comun';
+import * as Animatable from 'react-native-animatable';
 
 class PruebaEsfuerzo extends Component {
 
@@ -38,7 +39,10 @@ class PruebaEsfuerzo extends Component {
     render() {
         return (
             <ScrollView>
-                <View style={styles.formRow}>
+                <Animatable.View
+                    style={styles.formRow}
+                    animation="bounceInRight"
+                    duration={1200}>
                     <Text style={styles.formLabel}>Edad</Text>
                     <Picker
                         style={styles.formItem}
@@ -51,9 +55,12 @@ class PruebaEsfuerzo extends Component {
                         <Picker.Item label="51 - 60" value="51 - 60" />
                         <Picker.Item label="> 60" value="> 60" />
                     </Picker>
-                </View>
+                </Animatable.View>
 
-                <View style={styles.formRow}>
+                <Animatable.View
+                    style={styles.formRow}
+                    animation="bounceInRight"
+                    duration={1300}>
                     <Text style={styles.formLabel}>Federado/No-federado?</Text>
                     <Switch
                         style={styles.formItem}
@@ -61,9 +68,12 @@ class PruebaEsfuerzo extends Component {
                         trackColor={colorGaztaroaOscuro}
                         onValueChange={(value) => this.setState({ federado: value })}>
                     </Switch>
-                </View>
+                </Animatable.View>
 
-                <View style={styles.formRow}>
+                <Animatable.View
+                    style={styles.formRow}
+                    animation="bounceInRight"
+                    duration={1400}>
                     <Text style={styles.formLabel}>Día y hora</Text>
                     <DatePicker
                         style={{ flex: 2, marginRight: 20 }}
@@ -87,16 +97,19 @@ class PruebaEsfuerzo extends Component {
                         }}
                         onDateChange={(date) => { this.setState({ fecha: date }) }}
                     />
-                </View>
+                </Animatable.View>
 
-                <View style={styles.formRow}>
+                <Animatable.View
+                    style={styles.formRow}
+                    animation="bounceIn"
+                    duration={2000}>
                     <Button
                         onPress={() => this.gestionarReserva()}
                         title="Reservar"
                         color={colorGaztaroaOscuro}
                         accessibilityLabel="Gestionar reserva..."
                     />
-                </View>
+                </Animatable.View>
 
                 <Modal animationType={"slide"} transparent={false}
                     visible={this.state.showModal}
