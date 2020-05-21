@@ -13,9 +13,10 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import { Icon } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
-import { colorGaztaroaClaro, colorGaztaroaOscuro } from '../comun/comun';
+import { colorGaztaroaClaro, colorGaztaroaOscuro, firebaseConfig, obtenerImagen } from '../comun/comun';
 import { connect } from 'react-redux';
 import { fetchExcursiones, fetchComentarios, fetchCabeceras, fetchActividades } from '../redux/ActionCreators';
+import firebase from 'firebase';
 
 const mapStateToProps = state => {
   return {
@@ -35,6 +36,8 @@ const mapDispatchToProps = dispatch => ({
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+
+
 
 function HomeNavegador({ navigation }) {
   return (
@@ -288,10 +291,29 @@ function DrawerNavegador() {
 class Campobase extends Component {
 
   componentDidMount() {
+
+    // Iniciamos conexión con Firebase
+    firebase.initializeApp(firebaseConfig);
+
     this.props.fetchExcursiones();
     this.props.fetchComentarios();
     this.props.fetchCabeceras();
     this.props.fetchActividades();
+
+    /*console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    const imagen = "jaizkibel.png"
+    setTimeout(() => {
+      const a = obtenerImagen(imagen)
+      console.log(a)
+    }, 4000);*/
+
+    /*firebase.storage().ref("imagenes/" + imagen)
+    .then(function (url) {
+      console.log(url)
+    })*/
+
+    //console.log("imagenes/" + imagen)
+
   }
 
   render() {

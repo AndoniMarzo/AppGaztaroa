@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, ScrollView, View } from 'react-native';
 import { Card } from 'react-native-elements';
-import { baseUrl } from '../comun/comun';
+import { baseUrl, obtenerImagen } from '../comun/comun';
 import { connect } from 'react-redux';
 import {IndicadorActividad} from './IndicadorActividadComponent';
 
@@ -33,10 +33,11 @@ function RenderItem(props) {
 
     else {
         if (item != null) {
+            //console.log(obtenerImagen(item.imagen))
             return (
                 <Card
                     featuredTitle={item.nombre}
-                    image={{ uri: baseUrl + item.imagen }}>
+                    image={{ uri: "obtenerImagen(item.imagen)" }}>
                     <Text
                         style={{ margin: 10 }}>
                         {item.descripcion}</Text>
