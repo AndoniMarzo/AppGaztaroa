@@ -37,8 +37,6 @@ const mapDispatchToProps = dispatch => ({
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-
-
 function HomeNavegador({ navigation }) {
   return (
     <Stack.Navigator
@@ -158,6 +156,13 @@ function ExcursionesFavoritasNavegador({ navigation }) {
           title: 'ExcursionesFavoritas',
         }}
       />
+      <Stack.Screen
+        name="DetalleExcursion"
+        component={DetalleExcursion}
+        options={{
+          title: 'Detalle Excursión',
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -191,7 +196,7 @@ function CustomDrawerContent(props) {
       <SafeAreaView style={styles.container} forceInset={{ top: 'always', horizontal: 'never' }}>
         <View style={styles.drawerHeader}>
           <View style={{ flex: 1 }}>
-            <Image source={require('./imagenes/logo.png')} style={styles.drawerImage} />
+            <Image source={{uri: "https://firebasestorage.googleapis.com/v0/b/andoni-react-native.appspot.com/o/imagenes%2Flogo.png?alt=media&token=944a89fc-5330-43cc-a471-329207a6ba96"}} style={styles.drawerImage} />
           </View>
           <View style={{ flex: 2 }}>
             <Text style={styles.drawerHeaderText}> Gaztaroa</Text>
@@ -293,26 +298,13 @@ class Campobase extends Component {
   componentDidMount() {
 
     // Iniciamos conexión con Firebase
-    firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig)
 
+    // Cargamos los contenidos
     this.props.fetchExcursiones();
     this.props.fetchComentarios();
     this.props.fetchCabeceras();
     this.props.fetchActividades();
-
-    /*console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    const imagen = "jaizkibel.png"
-    setTimeout(() => {
-      const a = obtenerImagen(imagen)
-      console.log(a)
-    }, 4000);*/
-
-    /*firebase.storage().ref("imagenes/" + imagen)
-    .then(function (url) {
-      console.log(url)
-    })*/
-
-    //console.log("imagenes/" + imagen)
 
   }
 

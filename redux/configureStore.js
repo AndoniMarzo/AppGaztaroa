@@ -6,18 +6,32 @@ import { comentarios } from './comentarios';
 import { cabeceras } from './cabeceras';
 import { actividades } from './actividades';
 import { favoritos } from './favoritos';
+import { persistStore, persistReducer } from 'redux-persist'
+//import storage from 'redux-persist/lib/storage'
+import { AsyncStorage } from 'react-native';
+
+const persistConfig = {
+    key: 'root',
+    storage: AsyncStorage,
+    whitelist: ['favoritos']
+}
+
+const persistedReducer = persistReducer(
+    persistConfig,
+    combineReducers({
+        excursiones,
+        comentarios,
+        cabeceras,
+        actividades,
+        favoritos
+    }))
 
 export const ConfigureStore = () => {
     const store = createStore(
-        combineReducers({
-            excursiones,
-            comentarios,
-            cabeceras,
-            actividades,
-            favoritos
-        }),
-        applyMiddleware(thunk, logger)
+        persistedReducer,
+        applyMiddleware(thunk, logger),
     );
 
-    return store;
+    const persistor = persistStore(store)
+    return { store, persistor }
 }

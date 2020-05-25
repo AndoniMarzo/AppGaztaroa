@@ -24,7 +24,7 @@ class Calendario extends Component {
                         subtitle={item.descripcion}
                         hideChevron={true}
                         onPress={() => navigate('DetalleExcursion', { excursionId: item.id })}
-                        leftAvatar={{source: {uri: baseUrl + item.imagen}}}
+                        leftAvatar={{source: {uri: item.imagen}}}
                     />
             );
         }

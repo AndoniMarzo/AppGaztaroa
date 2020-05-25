@@ -1,6 +1,5 @@
 import firebase from 'firebase';
 
-
 export const baseUrl = "https://andoni-react-native.firebaseio.com/";
 export const colorGaztaroaOscuro = '#015afc';
 export const colorGaztaroaClaro = '#c2d3da';
@@ -15,18 +14,10 @@ export const firebaseConfig = {
   appId: "1:729997754954:web:9dc33645a2b89dd6e91cb3"
 };
 
-export const obtenerImagen = (imagen) => {
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-  const b = null
-  const storage = firebase.storage();
-  const pathReference = storage.ref("imagenes/" + imagen);
-  pathReference.getDownloadURL().then(function (url) {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    console.log(url)
-    console.log("BBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
-    b = url
-  })
-  console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCCC")
-  console.log(b)
-  return b
-};
+/*export const obtenerImagen = (imagen) => {
+    const storage = firebase.storage();
+    const pathReference = storage.ref("imagenes/" + imagen);   
+      pathReference.getDownloadURL().then(function (url) {      
+          return url     
+    })
+};*/

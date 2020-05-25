@@ -7,7 +7,6 @@ import Swipeout from 'react-native-swipeout';
 import IndicadorActividad from './IndicadorActividadComponent';
 import { borrarFavorito } from '../redux/ActionCreators';
 
-
 const mapStateToProps = state => {
     return {
         excursiones: state.excursiones,
@@ -18,7 +17,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     borrarFavorito: (excursionId) => dispatch(borrarFavorito(excursionId)),
 })
-
 
 
 class VistaFavoritos extends Component {
@@ -63,7 +61,7 @@ class VistaFavoritos extends Component {
                         hideChevron={true}
                         onPress={() => navigate('DetalleExcursion', { excursionId: item.id })}
                         onLongPress={() => this.mensajeAlert(item)}
-                        leftAvatar={{ source: { uri: baseUrl + item.imagen } }}
+                        leftAvatar={{ source: { uri: item.imagen } }}
                     />
                 </Swipeout>
             );
