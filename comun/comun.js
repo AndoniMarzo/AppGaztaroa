@@ -14,6 +14,10 @@ export const firebaseConfig = {
   appId: "1:729997754954:web:9dc33645a2b89dd6e91cb3"
 };
 
+export const ANDROID_CLIENT_ID = "729997754954-5p4inr1v4mlpdaa0p40ad53c251lfj4l.apps.googleusercontent.com"
+export const IOS_CLIENT_ID = "729997754954-ih5o02h79f3urpdkanlpl6kspp46qjj3.apps.googleusercontent.com"
+
+
 /*export const obtenerImagen = (imagen) => {
     const storage = firebase.storage();
     const pathReference = storage.ref("imagenes/" + imagen);   
