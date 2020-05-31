@@ -1,5 +1,5 @@
 import React, { Component, useRef } from 'react';
-import { Text, View, ScrollView, FlatList, Modal, StyleSheet, PanResponder, Alert, Animated } from 'react-native';
+import { Text, View, ScrollView, FlatList, Modal, StyleSheet, PanResponder, Alert, Animated, Share } from 'react-native';
 import { Card, Icon, Rating, Input } from 'react-native-elements';
 import { baseUrl, colorGaztaroaOscuro } from '../comun/comun';
 import { connect } from 'react-redux';
@@ -118,6 +118,14 @@ function RenderExcursion(props) {
                             color={colorGaztaroaOscuro}
                             onPress={() => props.comentarExcursion()}
                         />
+                        <Icon
+                            raised
+                            reverse
+                            name='share'
+                            type='font-awesome'
+                            color="green"
+                            onPress={() => compartir(excursion.nombre)}
+                        />
                     </View>
                 </Card>
             </Animatable.View>
@@ -153,6 +161,29 @@ function RenderComentario(props) {
         </Card>
     );
 }
+
+
+const compartir = async (excursion) => {
+    try {
+        const result = await Share.share({
+            message:
+                'Hola, te recomiendo la excursión al monte ' + excursion + ' que organiza Gaztaroa, anímate a ir!'  ,
+        });
+
+        if (result.action === Share.sharedAction) {
+            if (result.activityType) {
+                // shared with activity type of result.activityType
+            } else {
+                // shared
+            }
+        } else if (result.action === Share.dismissedAction) {
+            // dismissed
+        }
+    } catch (error) {
+        alert(error.message);
+    }
+};
+
 
 class DetalleExcursion extends Component {
     constructor(props) {
@@ -190,6 +221,8 @@ class DetalleExcursion extends Component {
         this.props.postComentario(excursionId, this.state.valoracion, this.state.autor, this.state.comentario);
         this.resetearModal();
     }
+
+
 
     render() {
         const { excursionId } = this.props.route.params;
