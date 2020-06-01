@@ -1,5 +1,3 @@
-import firebase from 'firebase';
-
 export const baseUrl = "https://andoni-react-native.firebaseio.com/";
 export const colorGaztaroaOscuro = '#015afc';
 export const colorGaztaroaClaro = '#c2d3da';

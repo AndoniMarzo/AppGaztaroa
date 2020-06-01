@@ -1,25 +1,30 @@
 import React, { Component } from 'react';
-import { Button, Image, View } from 'react-native';
+import { Button, Image, View, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
 class Perfil extends Component {
-  state = {
-    image: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      image: null,
+    };
+  }
 
   render() {
-    let { image } = this.state;
-
+    let image = this.state.image;
+    const { user } = this.props.route.params
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <View>
           <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
         </View>
-        
+
         <Button title="Pick an image from camera roll" onPress={this._pickImage} />
-        
+        <View >
+          <Text >Hi{user}!</Text>
+        </View>
       </View>
     );
   }
@@ -38,7 +43,7 @@ class Perfil extends Component {
   };
 
   _pickImage = async () => {
-    
+
     console.log("this.state.user")
     try {
       let result = await ImagePicker.launchImageLibraryAsync({

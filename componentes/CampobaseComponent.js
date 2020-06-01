@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Text } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { Icon } from 'react-native-elements';
-import { NavigationContainer, DrawerActions } from '@react-navigation/native';
+import { DrawerActions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { connect } from 'react-redux';
-import { fetchExcursiones, fetchComentarios, fetchCabeceras, fetchActividades } from '../redux/ActionCreators';
+import { fetchActividades, fetchCabeceras, fetchComentarios, fetchExcursiones } from '../redux/ActionCreators';
 
 import firebase from 'firebase';
 
 import Constants from 'expo-constants';
 import { colorGaztaroaClaro, colorGaztaroaOscuro, firebaseConfig } from '../comun/comun';
 
-import LoginScreen from './Login';
-import SignUpScreen from './SignUp';
+import LoginScreen from './LoginComponent';
+import SignUpScreen from './SignUpComponent';
 import Home from './HomeComponent';
 import QuienesSomos from './QuienesSomosComponent';
 import Calendario from './CalendarioComponent';
@@ -197,7 +197,7 @@ function PruebaEsfuerzoNavegador({ navigation }) {
   );
 }
 
-function PerfilNavegador({ navigation }) {
+function PerfilNavegador({ navigation, route }) {
   return (
     <Stack.Navigator
       initialRouteName="Perfil"
@@ -212,6 +212,7 @@ function PerfilNavegador({ navigation }) {
       <Stack.Screen
         name="Perfil"
         component={Perfil}
+        initialParams={{ user: route.params.user }}
         options={{
           title: 'Perfil',
         }}
@@ -238,7 +239,7 @@ function CustomDrawerContent(props) {
   );
 }
 
-function DrawerNavegador() {
+function DrawerNavegador({ route }) {
   return (
     <Drawer.Navigator
       drawerStyle={{
@@ -319,7 +320,7 @@ function DrawerNavegador() {
           )
         }}
       />
-      <Drawer.Screen name="Perfil" component={PerfilNavegador}
+      <Drawer.Screen name={route.params.user} component={PerfilNavegador} initialParams={{ user: route.params.user }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon
@@ -335,7 +336,7 @@ function DrawerNavegador() {
   );
 }
 
-function LoginNavegador({ navigation }) {
+function LoginNavegador() {
   return (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Login" component={LoginScreen} />
@@ -346,6 +347,9 @@ function LoginNavegador({ navigation }) {
 }
 
 class Campobase extends Component {
+  constructor(props) {
+    super(props);
+  }
 
   componentDidMount() {
 
@@ -362,7 +366,6 @@ class Campobase extends Component {
   }
 
   render() {
-
     return (
       <NavigationContainer>
         <View style={{ flex: 1, paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight }}>
@@ -411,7 +414,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 10
   }
-
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Campobase);
