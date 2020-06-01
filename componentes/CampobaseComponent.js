@@ -23,6 +23,7 @@ import DetalleExcursion from './DetalleExcursionComponent';
 import Contacto from './ContactoComponent';
 import ExcursionesFavoritas from './VistaFavoritosComponent';
 import PruebaEsfuerzo from './PruebaEsfuerzoComponent';
+import Perfil from './PerfilComponent';
 
 const mapStateToProps = state => {
   return {
@@ -196,6 +197,29 @@ function PruebaEsfuerzoNavegador({ navigation }) {
   );
 }
 
+function PerfilNavegador({ navigation }) {
+  return (
+    <Stack.Navigator
+      initialRouteName="Perfil"
+      headerMode="screen"
+      screenOptions={{
+        headerTintColor: '#fff',
+        headerStyle: { backgroundColor: colorGaztaroaOscuro },
+        headerTitleStyle: { color: '#fff' },
+        headerLeft: () => (<Icon name="menu" size={28} color='white' onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />),
+      }}
+    >
+      <Stack.Screen
+        name="Perfil"
+        component={Perfil}
+        options={{
+          title: 'Perfil',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props}>
@@ -288,6 +312,18 @@ function DrawerNavegador() {
           drawerIcon: ({ tintColor }) => (
             <Icon
               name='heartbeat'
+              type='font-awesome'
+              size={22}
+              color={tintColor}
+            />
+          )
+        }}
+      />
+      <Drawer.Screen name="Perfil" component={PerfilNavegador}
+        options={{
+          drawerIcon: ({ tintColor }) => (
+            <Icon
+              name='user'
               type='font-awesome'
               size={22}
               color={tintColor}
