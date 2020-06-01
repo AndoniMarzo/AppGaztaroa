@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import { Alert, Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
+
+import firebase from 'firebase';
+
 import { colorGaztaroaOscuro, firebaseConfig } from '../comun/comun';
 
 class SignUpScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      nombre: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -28,7 +32,7 @@ class SignUpScreen extends Component {
       method: "POST",
       body: JSON.stringify({
         email: this.state.email,
-        password: this.state.password.val,
+        password: this.state.password,
         returnSecureToken: true
       }),
       headers: {
@@ -45,7 +49,24 @@ class SignUpScreen extends Component {
         if (!parsedRes.idToken) {
           Alert.alert("Error en la autenticación", "Email o contraseña incorrectos");
         } else {
-          navigate('Inicio', { user: this.state.email })
+          firebase.database()
+            .ref('/usuarios')
+            .once('value')
+            .then(snapshot => {
+              let indice = 0;
+              if (snapshot.val() !== null) {
+                indice = snapshot.val().length
+              }
+              const user = { "email": this.state.email, "nombre": this.state.nombre }
+              firebase.database().ref("usuarios/" + indice)
+                .set(user)
+              navigate('Inicio', { user: user })
+            });
+
+          /* user = { "email": this.state.email, "nombre": this.state.nombre }
+          firebase.database().ref("usuarios/" + this.state.email)
+            .set(user)
+          navigate('Inicio', { user: user })*/
         }
       });
   };
@@ -59,6 +80,15 @@ class SignUpScreen extends Component {
         <Text style={styles.cabeceraTexto}> AppGaztaroa</Text>
 
         <View style={styles.inputGroup}>
+          <TextInput
+            placeholder="Nombre"
+            autoCapitalize="none"
+            value={this.state.nombre}
+            onChangeText={(nombre) => this.setState({ nombre })}
+            underlineColorAndroid={colorGaztaroaOscuro}
+            style={styles.input}
+          />
+
           <TextInput
             placeholder="Email"
             autoCapitalize="none"
@@ -90,7 +120,7 @@ class SignUpScreen extends Component {
         </View>
 
         <View style={styles.button} >
-          <Button title="REGISTRARSE" onPress={() => this.signupHandler({ navigate })} disabled={(this.state.email === "" || !this.state.valid)} />
+          <Button title="REGISTRARSE" onPress={() => this.signupHandler({ navigate })} disabled={(this.state.nombre === "" || this.state.email === "" || !this.state.valid)} />
         </View>
 
         <Text style={styles.text}>¿Ya tienes cuenta? <Text onPress={() => navigate('Login')} style={{ color: colorGaztaroaOscuro }}>Iniciar sesión</Text></Text>

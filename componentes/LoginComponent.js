@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Alert, Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SocialIcon } from 'react-native-elements';
 import * as Google from 'expo-google-app-auth';
+
+import firebase from 'firebase';
 
 import { colorGaztaroaOscuro, firebaseConfig, ANDROID_CLIENT_ID, IOS_CLIENT_ID } from '../comun/comun';
 
@@ -37,7 +40,20 @@ class LoginScreen extends Component {
         if (!parsedRes.idToken) {
           Alert.alert("Error en la autenticación", "Email o contraseña incorrectos");
         } else {
-          navigate('Inicio', { user: this.state.email })
+          firebase.database()
+            .ref('/usuarios')
+            .once('value')
+            .then(snapshot => {
+              let usuario = snapshot.val().filter((comentario) => comentario.email === this.state.email)
+              navigate('Inicio', { user: usuario[0] })
+            });
+            
+          /*firebase.database()
+            .ref('/usuarios/' + this.state.email)
+            .once('value')
+            .then(snapshot => {
+              navigate('Inicio', { user: snapshot.val() })
+            });*/
         }
       });
   };
@@ -51,8 +67,8 @@ class LoginScreen extends Component {
       });
 
       if (result.type === 'success') {
-        console.log(result)
-        navigate('Inicio', { user: result.user.email })
+        const user = { "email": result.user.email, "nombre": result.user.name }
+        navigate('Inicio', { user: user })
       } else {
         Alert.alert("Correo no válido");
       }
@@ -94,8 +110,13 @@ class LoginScreen extends Component {
           <Button title="INICIAR SESIÓN" onPress={() => this.loginHandler({ navigate })} color={colorGaztaroaOscuro} disabled={(this.state.email === "" || this.state.password === "")} />
         </View>
 
-        <View style={styles.button}>
-          <Button title="CONTINUAR CON GOOGLE" onPress={() => this.signInWithGoogleAsync({ navigate })} color={colorGaztaroaOscuro} />
+        <View style={styles.google}>
+          <SocialIcon
+            button
+            title="Iniciar sesión con Google"
+            type='google'
+            onPress={() => this.signInWithGoogleAsync({ navigate })}
+          />
         </View>
 
         <Text style={styles.text}>¿No tienes cuenta? <Text onPress={() => navigate('SignUp')} style={{ color: colorGaztaroaOscuro }}>Regístrate!</Text></Text>
@@ -133,6 +154,11 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 15,
     marginBottom: 15,
+  },
+  google: {
+    marginTop: 15,
+    marginBottom: 15,
+    width: 300,
   },
 });
 

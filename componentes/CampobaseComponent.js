@@ -320,7 +320,7 @@ function DrawerNavegador({ route }) {
           )
         }}
       />
-      <Drawer.Screen name={route.params.user} component={PerfilNavegador} initialParams={{ user: route.params.user }}
+      <Drawer.Screen name={route.params.user.nombre} component={PerfilNavegador} initialParams={{ user: route.params.user }}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon

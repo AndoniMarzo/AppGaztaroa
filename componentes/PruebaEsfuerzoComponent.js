@@ -64,9 +64,13 @@ class PruebaEsfuerzo extends Component {
 
             // Añadimos la prueba en el calendario
             //console.log(calendarioExpoID)
+            let start = new Date(this.state.fecha);
+            let finish = new Date(this.state.fecha);
+            finish.setHours(start.getHours() , start.getMinutes() + 30, 0, 0)
+            
             await Calendar.createEventAsync(calendarioExpoID, {
-                startDate: new Date(this.state.fecha),
-                endDate: new Date(this.calcularFin()),
+                startDate: start,
+                endDate: finish,
                 title: "Prueba de esfuerzo"
             })
                 .then(event => {
@@ -76,22 +80,6 @@ class PruebaEsfuerzo extends Component {
                     console.log('failure', error);
                 });
         }
-    }
-
-    calcularFin = () => {
-        const a = this.state.fecha
-        const b = a.split("T")
-        const c = b[1].split(":")
-        const d = parseInt(c[0]) + 1
-        let e = null
-        c.forEach((valor, indice) => {
-            if (indice > 0) {
-                e = e + ":" + valor
-            } else {
-                e = d
-            }
-        });
-        return (b[0] + "T" + e)
     }
 
     getDefaultCalendarSource = async () => {
