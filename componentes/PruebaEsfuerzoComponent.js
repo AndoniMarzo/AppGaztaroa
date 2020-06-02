@@ -1,24 +1,26 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal, Platform } from 'react-native';
+import { Button, Modal, Picker, Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import DatePicker from 'react-native-datepicker'
-import { colorGaztaroaOscuro } from '../comun/comun';
 import * as Animatable from 'react-native-animatable';
+
 import * as Calendar from 'expo-calendar';
+
+import { colorGaztaroaOscuro } from '../comun/comun';
 
 class PruebaEsfuerzo extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            edad: 18,
-            federado: false,
-            fecha: '',
+            edad: this.props.route.params.user.edad,
+            federado: this.props.route.params.user.federado,
+            fecha: new Date().toString(),
             showModal: false
         }
     }
 
     gestionarReserva() {
         console.log(JSON.stringify(this.state));
+        console.log(this.state.fecha)
         this.addCalendario();
         this.toggleModal();
     }
@@ -29,9 +31,9 @@ class PruebaEsfuerzo extends Component {
 
     resetForm() {
         this.setState({
-            edad: 18,
-            federado: false,
-            fecha: '',
+            edad: this.props.route.params.user.edad,
+            federado: this.props.route.params.user.edad,
+            fecha: new Date(),
             showModal: false
         });
     }
@@ -66,26 +68,19 @@ class PruebaEsfuerzo extends Component {
             //console.log(calendarioExpoID)
             let start = new Date(this.state.fecha);
             let finish = new Date(this.state.fecha);
-            finish.setHours(start.getHours() , start.getMinutes() + 30, 0, 0)
-            
+            finish.setHours(start.getHours(), start.getMinutes() + 30, 0, 0)
+
             await Calendar.createEventAsync(calendarioExpoID, {
                 startDate: start,
                 endDate: finish,
                 title: "Prueba de esfuerzo"
-            })
-                .then(event => {
-                    console.log('success', event);
-                })
-                .catch(error => {
-                    console.log('failure', error);
-                });
+            }).then(event => {
+                console.log('success', event);
+                console.log(start);
+            }).catch(error => {
+                console.log('failure', error);
+            });
         }
-    }
-
-    getDefaultCalendarSource = async () => {
-        const calendars = await Calendar.getCalendarsAsync();
-        const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
-        return defaultCalendars[0].source;
     }
 
     createCalendar = async () => {
@@ -107,7 +102,33 @@ class PruebaEsfuerzo extends Component {
         return newCalendarID
     }
 
+    getDefaultCalendarSource = async () => {
+        const calendars = await Calendar.getCalendarsAsync();
+        const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
+        return defaultCalendars[0].source;
+    }
+
+    valorInicial = () => {
+        let edad = this.state.edad
+        if (edad < 20 || edad == "< 20") {
+            return "< 20"
+        } else if (edad <= 30 || edad == "20 - 30") {
+            return "20 - 30"
+        } else if (edad <= 40 || edad == "31 - 40") {
+            return "31 - 40"
+        } else if (edad <= 50 || edad == "41 - 50") {
+            return "41 - 50"
+        } else if (edad <= 60 || edad == "51 - 60") {
+            return "51 - 60"
+        } else if (edad > 60 || edad == "51 - 60") {
+            return "> 60"
+        } else {
+            return "< 20"
+        }
+    }
+
     render() {
+        () => this.setState({edad: this.props.route.params.user.edad})
         return (
             <ScrollView>
                 <Animatable.View
@@ -117,7 +138,7 @@ class PruebaEsfuerzo extends Component {
                     <Text style={styles.formLabel}>Edad</Text>
                     <Picker
                         style={styles.formItem}
-                        selectedValue={this.state.edad}
+                        selectedValue={this.valorInicial()}
                         onValueChange={(itemValue, itemIndex) => this.setState({ edad: itemValue })}>
                         <Picker.Item label="< 20" value="< 20" />
                         <Picker.Item label="20 - 30" value="20 - 30" />
@@ -199,7 +220,6 @@ class PruebaEsfuerzo extends Component {
                         />
                     </View>
                 </Modal>
-
             </ScrollView>
         );
     }
@@ -218,7 +238,7 @@ const styles = StyleSheet.create({
         flex: 2
     },
     formItem: {
-        flex: 1
+        flex: 1.1,
     },
     modal: {
         justifyContent: 'center',

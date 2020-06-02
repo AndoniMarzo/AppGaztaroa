@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { FlatList, View, Alert } from 'react-native';
+import { Alert, FlatList, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { baseUrl } from '../comun/comun';
-import { connect } from 'react-redux';
 import Swipeout from 'react-native-swipeout';
-import IndicadorActividad from './IndicadorActividadComponent';
+
+import { connect } from 'react-redux';
 import { borrarFavorito } from '../redux/ActionCreators';
+
+import IndicadorActividad from './IndicadorActividadComponent';
 
 const mapStateToProps = state => {
     return {
@@ -18,9 +19,7 @@ const mapDispatchToProps = dispatch => ({
     borrarFavorito: (excursionId) => dispatch(borrarFavorito(excursionId)),
 })
 
-
 class VistaFavoritos extends Component {
-
     mensajeAlert(item) {
         Alert.alert(
             "Borrar excursión favorita?",
@@ -41,9 +40,7 @@ class VistaFavoritos extends Component {
 
     render() {
         const { navigate } = this.props.navigation;
-
         const renderFavoritoItem = ({ item, index }) => {
-
             const rightButton = [
                 {
                     text: 'Borrar',
@@ -71,17 +68,13 @@ class VistaFavoritos extends Component {
             return (
                 <IndicadorActividad />
             );
-        }
-
-        else if (this.props.excursiones.errMess) {
+        } else if (this.props.excursiones.errMess) {
             return (
                 <View>
                     <Text>{this.props.excursiones.errMess}</Text>
                 </View>
             );
-        }
-
-        else {
+        } else {
             if (this.props.favoritos.length > 0) {
                 let favorito = [];
                 this.props.favoritos.sort()
@@ -96,14 +89,10 @@ class VistaFavoritos extends Component {
                     />
                 );
             } else {
-                return (
-                    <View>
-
-                    </View>
-                );
+                return (<View></View>);
             }
         }
-    };
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(VistaFavoritos);

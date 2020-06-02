@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Text, ScrollView } from 'react-native';
-import { Card } from 'react-native-elements';
-import { FlatList } from 'react-native';
-import { ListItem } from 'react-native-elements';
-import { baseUrl } from '../comun/comun';
+import { FlatList, ScrollView, Text } from 'react-native';
+import { Card, ListItem } from 'react-native-elements';
+
 import { connect } from 'react-redux';
+
 import IndicadorActividad from './IndicadorActividadComponent';
 
 const mapStateToProps = state => {
@@ -29,9 +28,7 @@ function Historia() {
 }
 
 class QuienesSomos extends Component {
-
     render() {
-
         const renderActividadItem = ({ item, index }) => {
             return (
                 <ListItem
@@ -53,9 +50,7 @@ class QuienesSomos extends Component {
                     </Card>
                 </ScrollView>
             );
-        }
-
-        else if (this.props.actividades.isLoading) {
+        } else if (this.props.actividades.isLoading) {
             return (
                 <ScrollView>
                     <Historia />
@@ -64,9 +59,7 @@ class QuienesSomos extends Component {
                     </Card>
                 </ScrollView>
             );
-        }
-
-        else {
+        } else {
             return (
                 <ScrollView>
                     <Historia />

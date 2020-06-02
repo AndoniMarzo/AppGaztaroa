@@ -5,6 +5,8 @@ import DatePicker from 'react-native-datepicker'
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+import firebase from 'firebase';
+import { obtenerURL } from '../comun/comun'
 
 class Perfil extends Component {
   constructor(props) {
@@ -12,14 +14,15 @@ class Perfil extends Component {
     this.state = {
       image: null,
       showModal: false,
-      edad: 18,
-      federado: false,
-      fecha: "2020-06-01"
+      edad: this.props.route.params.user.edad,
+      federado: this.props.route.params.user.federado,
+      fecha: new Date()
     };
   }
 
   componentDidMount() {
     this.getPermissionAsync();
+    this.actualizarFoto();
   }
 
   getPermissionAsync = async () => {
@@ -31,24 +34,73 @@ class Perfil extends Component {
     }
   };
 
-  _pickImage = async () => {
+  actualizarFoto = async () => {
+    obtenerURL('profile/' + this.props.route.params.user.indice + '.jpg')
+      .then((result) => {
+        this.setState({ image: result })
+      })
+  }
 
-    console.log("this.state.user")
-    try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+  fotoPerfil = () => {
+    ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    }).then((result) => {
       if (!result.cancelled) {
-        this.setState({ image: result.uri });
+        const { height, width, type, uri } = result;
+        return this.uriToBlob(uri);
       }
-      console.log(result);
-    } catch (E) {
-      console.log(E);
-    }
-  };
+    }).then((blob) => {
+      return this.uploadToFirebase(blob);
+    }).then((snapshot) => {
+      console.log("Foto subida");
+      this.actualizarFoto();
+    }).catch((error) => {
+      throw error;
+    });
+  }
+
+  uriToBlob = (uri) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.onload = function () {
+        // return the blob
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function () {
+        // something went wrong
+        reject(new Error('uriToBlob failed'));
+      };
+
+      // this helps us get a blob
+      xhr.responseType = 'blob';
+      xhr.open('GET', uri, true);
+      xhr.send(null);
+    });
+  }
+
+  uploadToFirebase = (blob) => {
+    return new Promise((resolve, reject) => {
+      var storageRef = firebase.storage().ref();
+      storageRef.child('profile/' + this.props.route.params.user.indice + '.jpg').put(blob, {
+        contentType: 'image/jpeg'
+      }).then((snapshot) => {
+        blob.close();
+        resolve(snapshot);
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+  }
+
+  cerrarSesion = ({ navigate }) => {
+    firebase.auth().signOut()
+    navigate('Login', { user: [] })
+  }
 
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
@@ -65,9 +117,22 @@ class Perfil extends Component {
     this.setState({ edad: edad });
   }
 
+  guardarEstado = () => {
+    let user = this.props.route.params.user
+    user.edad = this.state.edad
+    user.federado = this.state.federado
+    firebase.database()
+      .ref('usuarios/' + user.indice)
+      .update({
+        edad: user.edad,
+        federado: user.federado,
+      })
+  }
+
   render() {
     let image = this.state.image;
     const { user } = this.props.route.params
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.contianer}>
         <View style={styles.cabecera}>
@@ -76,31 +141,38 @@ class Perfil extends Component {
               rounded
               showAccessory
               size="large"
-              source={{ uri: this.state.image }}
-              onPress={() => this._pickImage()}
+              source={{ uri: image }}
+              onPress={() => this.fotoPerfil()}
             />
           </View>
           <View>
-            <Text style={styles.nombre}>{user.nombre}</Text>
-            <Text style={styles.nombre}>Edad: {this.state.edad}</Text>
+            <Text style={styles.texto}>{user.nombre}</Text>
+            <Text style={styles.texto}>Edad: {this.state.edad}</Text>
           </View>
         </View>
 
         <View>
-          <Text style={styles.nombre}>Email: {user.email}</Text>
+          <Text style={styles.texto}>Email: {user.email}</Text>
         </View>
 
         <View>
-          <Text style={styles.nombre}>Federado: {this.state.federado ? 'Si' : 'No'}</Text>
-        </View>
-        <View style={styles.button}>
-          <Button title="Configurar" onPress={() => this.toggleModal()} />
+          <Text style={styles.texto}>Federado: {this.state.federado ? 'Si' : 'No'}</Text>
         </View>
 
+        <View style={styles.botones}>
+
+          <View style={styles.button}>
+            <Button title="Configurar" onPress={() => this.toggleModal()} />
+          </View>
+
+          <View style={styles.button}>
+            <Button title="Cerrar sesión" onPress={() => this.cerrarSesion({ navigate })} />
+          </View>
+        </View>
         <Modal animationType={"slide"} transparent={false}
           visible={this.state.showModal}
-          onDismiss={() => this.toggleModal()}
-          onRequestClose={() => this.toggleModal()}
+          onDismiss={() => { this.toggleModal(); this.guardarEstado() }}
+          onRequestClose={() => { this.toggleModal(); this.guardarEstado() }}
         >
           <View style={styles.modal}>
             <Text style={styles.modalTitle}>Datos del usuario</Text>
@@ -116,15 +188,8 @@ class Perfil extends Component {
                 confirmBtnText="Confirmar"
                 cancelBtnText="Cancelar"
                 customStyles={{
-                  dateIcon: {
-                    position: 'absolute',
-                    left: 0,
-                    top: 4,
-                    marginLeft: 0
-                  },
-                  dateInput: {
-                    marginLeft: 36
-                  }
+                  dateIcon: { position: 'absolute', left: 0, top: 4, marginLeft: 0 },
+                  dateInput: { marginLeft: 36 }
                 }}
                 onDateChange={(date) => { this.setState({ fecha: date }); this.calcularEdad(date) }}
               />
@@ -140,11 +205,10 @@ class Perfil extends Component {
 
             <Button
               title="Guardar cambios"
-              onPress={() => this.toggleModal()}
+              onPress={() => { this.toggleModal(); this.guardarEstado() }}
             />
           </View>
         </Modal>
-
       </View>
     );
   }
@@ -159,16 +223,22 @@ const styles = StyleSheet.create({
     height: 100,
     padding: 20,
   },
-  nombre: {
+  texto: {
     paddingTop: 5,
     paddingLeft: 20,
     paddingBottom: 5,
     fontSize: 20,
   },
+  botones: {
+    flexDirection: "row",
+    marginBottom: 15,
+    alignItems: "center"
+  },
   button: {
     marginTop: 15,
     marginBottom: 15,
-    alignItems: "center"
+    alignItems: "center",
+    flex: 1,
   },
   modal: {
     justifyContent: 'center',

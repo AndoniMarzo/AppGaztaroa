@@ -1,10 +1,12 @@
 import React, { Component, useRef } from 'react';
-import { Text, View, ScrollView, FlatList, Modal, StyleSheet, PanResponder, Alert, Animated, Share } from 'react-native';
-import { Card, Icon, Rating, Input } from 'react-native-elements';
-import { baseUrl, colorGaztaroaOscuro } from '../comun/comun';
-import { connect } from 'react-redux';
-import { postFavorito, postComentario } from '../redux/ActionCreators';
+import { Alert, Animated, FlatList, Modal, PanResponder, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Card, Icon, Input, Rating } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
+
+import { connect } from 'react-redux';
+import { postComentario, postFavorito } from '../redux/ActionCreators';
+
+import { colorGaztaroaOscuro } from '../comun/comun';
 
 const mapStateToProps = state => {
     return {
@@ -20,9 +22,7 @@ const mapDispatchToProps = dispatch => ({
 })
 
 function RenderExcursion(props) {
-
     const excursion = props.excursion;
-
     const cardAnimada = useRef(null);
 
     const reconocerDragDerechaIzquierda = ({ moveX, moveY, dx, dy }) => {
@@ -71,19 +71,17 @@ function RenderExcursion(props) {
 
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const efectoFavoritos = () => {
+        props.onPress()
         Animated.timing(fadeAnim, {
             toValue: 0,
             duration: 2000
-        }).start();
-        props.onPress()
-        setTimeout(() => {
+        }).start(() => {
             Animated.timing(fadeAnim, {
                 toValue: 1,
                 duration: 200
-            }).start();
-        }, 2000);
+            }).start()
+        })
     };
-
 
     if (excursion != null) {
         return (
@@ -137,11 +135,8 @@ function RenderExcursion(props) {
 }
 
 function RenderComentario(props) {
-
     const comentarios = props.comentarios;
-
     const renderCommentarioItem = ({ item, index }) => {
-
         return (
             <View key={index} style={{ margin: 10 }}>
                 <Text style={{ fontSize: 14 }}>{item.comentario}</Text>
@@ -162,36 +157,23 @@ function RenderComentario(props) {
     );
 }
 
-
 const compartir = async (excursion) => {
     try {
         const result = await Share.share({
             message:
-                'Hola, te recomiendo la excursión al monte ' + excursion + ' que organiza Gaztaroa, anímate a ir!'  ,
+                'Hola, te recomiendo la excursión al monte ' + excursion + ' que organiza Gaztaroa, anímate a ir!',
         });
-
-        if (result.action === Share.sharedAction) {
-            if (result.activityType) {
-                // shared with activity type of result.activityType
-            } else {
-                // shared
-            }
-        } else if (result.action === Share.dismissedAction) {
-            // dismissed
-        }
     } catch (error) {
         alert(error.message);
     }
 };
 
-
 class DetalleExcursion extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             valoracion: 3,
-            autor: [],
+            autor: this.props.route.params.user.nombre,
             comentario: [],
             showModal: false
         }
@@ -210,7 +192,7 @@ class DetalleExcursion extends Component {
     resetearModal() {
         this.setState({
             valoracion: 3,
-            autor: [],
+            autor: this.props.route.params.user.nombre,
             comentario: [],
             showModal: false
         });
@@ -221,8 +203,6 @@ class DetalleExcursion extends Component {
         this.props.postComentario(excursionId, this.state.valoracion, this.state.autor, this.state.comentario);
         this.resetearModal();
     }
-
-
 
     render() {
         const { excursionId } = this.props.route.params;
@@ -246,7 +226,6 @@ class DetalleExcursion extends Component {
                     onRequestClose={() => { this.resetearModal(); }}>
 
                     <View style={styles.modal}>
-
                         <View>
                             <Rating
                                 showRating
@@ -259,6 +238,7 @@ class DetalleExcursion extends Component {
                         <View>
                             <Input
                                 placeholder='Autor'
+                                value = {this.props.route.params.user.nombre}
                                 onChangeText={value => this.setState({ autor: value })}
                                 leftIcon={
                                     <Icon name='user-o' type='font-awesome' />

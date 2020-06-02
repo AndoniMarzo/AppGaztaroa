@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Text, ScrollView, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { Card } from 'react-native-elements';
-import { baseUrl, obtenerImagen } from '../comun/comun';
+
 import { connect } from 'react-redux';
+
 import { IndicadorActividad } from './IndicadorActividadComponent';
 
 const mapStateToProps = state => {
@@ -14,24 +15,18 @@ const mapStateToProps = state => {
 }
 
 function RenderItem(props) {
-
     const item = props.item;
-
     if (props.isLoading) {
         return (
             <IndicadorActividad />
         );
-    }
-
-    else if (props.errMess) {
+    } else if (props.errMess) {
         return (
             <View>
                 <Text>{props.errMess}</Text>
             </View>
         );
-    }
-
-    else {
+    } else {
         if (item != null) {
             return (
                 <Card
@@ -43,18 +38,14 @@ function RenderItem(props) {
                     </Text>
                 </Card>
             );
-        }
-        else {
+        } else {
             return (<View></View>);
         }
     }
 }
 
-
 class Home extends Component {
-
     render() {
-
         return (
             <ScrollView>
                 <RenderItem item={this.props.cabeceras.cabeceras.filter((cabecera) => cabecera.destacado)[0]} />

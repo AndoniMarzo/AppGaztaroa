@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Alert, Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SocialIcon } from 'react-native-elements';
-import * as Google from 'expo-google-app-auth';
 
 import firebase from 'firebase';
+import * as Google from 'expo-google-app-auth';
 
 import { colorGaztaroaOscuro, firebaseConfig, ANDROID_CLIENT_ID, IOS_CLIENT_ID } from '../comun/comun';
 
@@ -44,16 +44,9 @@ class LoginScreen extends Component {
             .ref('/usuarios')
             .once('value')
             .then(snapshot => {
-              let usuario = snapshot.val().filter((comentario) => comentario.email === this.state.email)
+              let usuario = snapshot.val().filter((usuarios) => usuarios.email === this.state.email)
               navigate('Inicio', { user: usuario[0] })
             });
-            
-          /*firebase.database()
-            .ref('/usuarios/' + this.state.email)
-            .once('value')
-            .then(snapshot => {
-              navigate('Inicio', { user: snapshot.val() })
-            });*/
         }
       });
   };
@@ -67,14 +60,51 @@ class LoginScreen extends Component {
       });
 
       if (result.type === 'success') {
-        const user = { "email": result.user.email, "nombre": result.user.name }
-        navigate('Inicio', { user: user })
+        firebase.database()
+          .ref('/usuarios')
+          .once('value')
+          .then(snapshot => {
+            if (snapshot.val() == null) {
+              // No hay usuarios
+              const indice = 0
+              this.registrarUsuario(indice, result, { navigate })
+            } else {
+              // Hay usuarios
+              let usuario = snapshot.val().filter((usuarios) => usuarios.email === result.user.email)
+              if (usuario.length > 0) {
+                // Usuario existente
+                navigate('Inicio', { user: usuario[0] })
+              } else {
+                // Usuario no existente
+                let indice = 0;
+                if (snapshot.val() !== null) {
+                  indice = snapshot.val().length
+                }
+                this.registrarUsuario(indice, result, { navigate })
+              }
+            }
+          });
+
       } else {
         Alert.alert("Correo no válido");
       }
     } catch (e) {
       Alert.alert("Error al intentar hacer login con Google");
     }
+  }
+
+  registrarUsuario = (indice, result, { navigate }) => {
+    const user = {
+      "email": result.user.email,
+      "nombre": result.user.name,
+      "indice": indice,
+      "edad": "",
+      "federado": false
+    }
+
+    firebase.database().ref("usuarios/" + indice)
+      .set(user)
+    navigate('Inicio', { user: user })
   }
 
   render() {

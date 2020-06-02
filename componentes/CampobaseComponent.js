@@ -10,9 +10,7 @@ import { connect } from 'react-redux';
 import { fetchActividades, fetchCabeceras, fetchComentarios, fetchExcursiones } from '../redux/ActionCreators';
 
 import firebase from 'firebase';
-
 import Constants from 'expo-constants';
-import { colorGaztaroaClaro, colorGaztaroaOscuro, firebaseConfig } from '../comun/comun';
 
 import LoginScreen from './LoginComponent';
 import SignUpScreen from './SignUpComponent';
@@ -24,6 +22,7 @@ import Contacto from './ContactoComponent';
 import ExcursionesFavoritas from './VistaFavoritosComponent';
 import PruebaEsfuerzo from './PruebaEsfuerzoComponent';
 import Perfil from './PerfilComponent';
+import { colorGaztaroaClaro, colorGaztaroaOscuro, firebaseConfig } from '../comun/comun';
 
 const mapStateToProps = state => {
   return {
@@ -59,9 +58,7 @@ function HomeNavegador({ navigation }) {
       <Stack.Screen
         name="Home"
         component={Home}
-        options={{
-          title: 'Campo Base',
-        }}
+        options={{ title: 'Campo Base', }}
       />
     </Stack.Navigator>
   );
@@ -82,15 +79,13 @@ function QuienesSomosNavegador({ navigation }) {
       <Stack.Screen
         name="QuienesSomos"
         component={QuienesSomos}
-        options={{
-          title: 'Quiénes somos',
-        }}
+        options={{ title: 'Quiénes somos', }}
       />
     </Stack.Navigator>
   );
 }
 
-function CalendarioNavegador({ navigation }) {
+function CalendarioNavegador({ navigation, route }) {
   return (
     <Stack.Navigator
       initialRouteName="Calendario"
@@ -113,15 +108,14 @@ function CalendarioNavegador({ navigation }) {
       <Stack.Screen
         name="DetalleExcursion"
         component={DetalleExcursion}
-        options={{
-          title: 'Detalle Excursión',
-        }}
+        initialParams={{ user: route.params.user }}
+        options={{ title: 'Detalle Excursión', }}
       />
     </Stack.Navigator>
   );
 }
 
-function ContactoNavegador({ navigation }) {
+function ContactoNavegador({ navigation, route }) {
   return (
     <Stack.Navigator
       initialRouteName="Contacto"
@@ -136,15 +130,14 @@ function ContactoNavegador({ navigation }) {
       <Stack.Screen
         name="Contacto"
         component={Contacto}
-        options={{
-          title: 'Contacto',
-        }}
+        initialParams={{ user: route.params.user }}
+        options={{ title: 'Contacto', }}
       />
     </Stack.Navigator>
   );
 }
 
-function ExcursionesFavoritasNavegador({ navigation }) {
+function ExcursionesFavoritasNavegador({ navigation, route }) {
   return (
     <Stack.Navigator
       initialRouteName="ExcursionesFavoritas"
@@ -159,22 +152,19 @@ function ExcursionesFavoritasNavegador({ navigation }) {
       <Stack.Screen
         name="ExcursionesFavoritas"
         component={ExcursionesFavoritas}
-        options={{
-          title: 'ExcursionesFavoritas',
-        }}
+        options={{ title: 'ExcursionesFavoritas', }}
       />
       <Stack.Screen
         name="DetalleExcursion"
         component={DetalleExcursion}
-        options={{
-          title: 'Detalle Excursión',
-        }}
+        initialParams={{ user: route.params.user }}
+        options={{ title: 'Detalle Excursión', }}
       />
     </Stack.Navigator>
   );
 }
 
-function PruebaEsfuerzoNavegador({ navigation }) {
+function PruebaEsfuerzoNavegador({ navigation, route }) {
   return (
     <Stack.Navigator
       initialRouteName="Prueba de Esfuerzo"
@@ -189,9 +179,8 @@ function PruebaEsfuerzoNavegador({ navigation }) {
       <Stack.Screen
         name="Prueba de Esfuerzo"
         component={PruebaEsfuerzo}
-        options={{
-          title: 'Prueba de esfuerzo',
-        }}
+        initialParams={{ user: route.params.user }}
+        options={{ title: 'Prueba de esfuerzo', }}
       />
     </Stack.Navigator>
   );
@@ -213,9 +202,7 @@ function PerfilNavegador({ navigation, route }) {
         name="Perfil"
         component={Perfil}
         initialParams={{ user: route.params.user }}
-        options={{
-          title: 'Perfil',
-        }}
+        options={{ title: 'Perfil', }}
       />
     </Stack.Navigator>
   );
@@ -242,93 +229,56 @@ function CustomDrawerContent(props) {
 function DrawerNavegador({ route }) {
   return (
     <Drawer.Navigator
-      drawerStyle={{
-        backgroundColor: colorGaztaroaClaro,
-      }}
+      drawerStyle={{ backgroundColor: colorGaztaroaClaro, }}
       initialRouteName="Home"
       drawerContent={props => <CustomDrawerContent {...props} />}
     >
       <Drawer.Screen name="Campo base" component={HomeNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
-            <Icon
-              name='home'
-              type='font-awesome'
-              size={24}
-              color={tintColor}
-            />
+            <Icon name='home' type='font-awesome' size={24} color={tintColor} />
           )
         }}
       />
       <Drawer.Screen name="Quiénes somos" component={QuienesSomosNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
-            <Icon
-              name='info-circle'
-              type='font-awesome'
-              size={24}
-              color={tintColor}
-            />
+            <Icon name='info-circle' type='font-awesome' size={24} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name="Calendario" component={CalendarioNavegador}
+      <Drawer.Screen name="Calendario" component={CalendarioNavegador} initialParams={{ user: route.params.user }}
         options={{
           drawerIcon: ({ tintColor }) => (
-            <Icon
-              name='calendar'
-              type='font-awesome'
-              size={24}
-              color={tintColor}
-            />
+            <Icon name='calendar' type='font-awesome' size={24} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name="Contacto" component={ContactoNavegador}
+      <Drawer.Screen name="Contacto" component={ContactoNavegador} initialParams={{ user: route.params.user }}
         options={{
           drawerIcon: ({ tintColor }) => (
-            <Icon
-              name='address-card'
-              type='font-awesome'
-              size={22}
-              color={tintColor}
-            />
+            <Icon name='address-card' type='font-awesome' size={22} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name="Excursiones favoritas" component={ExcursionesFavoritasNavegador}
+      <Drawer.Screen name="Excursiones favoritas" component={ExcursionesFavoritasNavegador} initialParams={{ user: route.params.user }}
         options={{
           drawerIcon: ({ tintColor }) => (
-            <Icon
-              name='thumbs-up'
-              type='font-awesome'
-              size={22}
-              color={tintColor}
-            />
+            <Icon name='thumbs-up' type='font-awesome' size={22} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name="Prueba de esfuerzo" component={PruebaEsfuerzoNavegador}
+      <Drawer.Screen name="Prueba de esfuerzo" component={PruebaEsfuerzoNavegador} initialParams={{ user: route.params.user }}
         options={{
           drawerIcon: ({ tintColor }) => (
-            <Icon
-              name='heartbeat'
-              type='font-awesome'
-              size={22}
-              color={tintColor}
-            />
+            <Icon name='heartbeat' type='font-awesome' size={22} color={tintColor} />
           )
         }}
       />
       <Drawer.Screen name={route.params.user.nombre} component={PerfilNavegador} initialParams={{ user: route.params.user }}
         options={{
           drawerIcon: ({ tintColor }) => (
-            <Icon
-              name='user'
-              type='font-awesome'
-              size={22}
-              color={tintColor}
-            />
+            <Icon name='user' type='font-awesome' size={22} color={tintColor} />
           )
         }}
       />
@@ -398,22 +348,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 60
   },
-  modal: {
-    justifyContent: 'center',
-    margin: 20
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    backgroundColor: '#512DA8',
-    textAlign: 'center',
-    color: 'white',
-    marginBottom: 20
-  },
-  modalText: {
-    fontSize: 18,
-    margin: 10
-  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Campobase);

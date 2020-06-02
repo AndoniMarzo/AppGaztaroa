@@ -53,23 +53,35 @@ class SignUpScreen extends Component {
             .ref('/usuarios')
             .once('value')
             .then(snapshot => {
-              let indice = 0;
-              if (snapshot.val() !== null) {
-                indice = snapshot.val().length
-              }
-              const user = { "email": this.state.email, "nombre": this.state.nombre }
-              firebase.database().ref("usuarios/" + indice)
-                .set(user)
-              navigate('Inicio', { user: user })
-            });
+              // Comprobamos si el usuario se había registrado con Google
+              let usuario = snapshot.val().filter((usuarios) => usuarios.email === this.state.email)
+              if (usuario.length > 0) {
+                // El usuario existe
+                navigate('Inicio', { user: usuario[0] })
+              } else {
+                // El usuario no existe
+                let indice = 0;
+                if (snapshot.val() !== null) {
+                  indice = snapshot.val().length
+                }
 
-          /* user = { "email": this.state.email, "nombre": this.state.nombre }
-          firebase.database().ref("usuarios/" + this.state.email)
-            .set(user)
-          navigate('Inicio', { user: user })*/
+                const user = {
+                  "email": this.state.email,
+                  "nombre": this.state.nombre,
+                  "indice": indice,
+                  "edad": "",
+                  "federado": false
+                }
+
+                firebase.database().ref("usuarios/" + indice)
+                  .set(user)
+                navigate('Inicio', { user: user })
+              }
+            }
+            )
         }
-      });
-  };
+      })
+  }
 
   render() {
     const { navigate } = this.props.navigation;
