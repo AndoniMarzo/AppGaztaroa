@@ -4,7 +4,7 @@ import { Card, Icon, Input, Rating } from 'react-native-elements';
 import * as Animatable from 'react-native-animatable';
 
 import { connect } from 'react-redux';
-import { postComentario, postFavorito } from '../redux/ActionCreators';
+import { postComentario, actualizarFavoritos } from '../redux/ActionCreators';
 
 import { colorGaztaroaOscuro } from '../comun/comun';
 
@@ -12,12 +12,12 @@ const mapStateToProps = state => {
     return {
         excursiones: state.excursiones,
         comentarios: state.comentarios,
-        favoritos: state.favoritos
+        usuario: state.usuario,
     }
 }
 
 const mapDispatchToProps = dispatch => ({
-    postFavorito: (excursionId) => dispatch(postFavorito(excursionId)),
+    actualizarFavoritos: (usuario, excursionId) => dispatch(actualizarFavoritos(usuario, excursionId)),
     postComentario: (excursionId, valoracion, autor, comentario) => dispatch(postComentario(excursionId, valoracion, autor, comentario))
 })
 
@@ -157,6 +157,7 @@ function RenderComentario(props) {
     );
 }
 
+// Compartir la excursión por redes sociales
 const compartir = async (excursion) => {
     try {
         const result = await Share.share({
@@ -173,14 +174,14 @@ class DetalleExcursion extends Component {
         super(props);
         this.state = {
             valoracion: 3,
-            autor: this.props.route.params.user.nombre,
+            autor: this.props.usuario.nombre,
             comentario: [],
             showModal: false
         }
     }
 
     marcarFavorito(excursionId) {
-        this.props.postFavorito(excursionId);
+        this.props.actualizarFavoritos(this.props.usuario, excursionId);
     }
 
     comentarExcursion() {
@@ -192,25 +193,25 @@ class DetalleExcursion extends Component {
     resetearModal() {
         this.setState({
             valoracion: 3,
-            autor: this.props.route.params.user.nombre,
+            autor: this.props.usuario.nombre,
             comentario: [],
             showModal: false
         });
     }
 
     gestionarComentario(excursionId) {
-        console.log(excursionId, this.state.valoracion, this.state.autor, this.state.comentario);
         this.props.postComentario(excursionId, this.state.valoracion, this.state.autor, this.state.comentario);
         this.resetearModal();
     }
 
     render() {
         const { excursionId } = this.props.route.params;
+
         return (
             <ScrollView>
                 <RenderExcursion
                     excursion={this.props.excursiones.excursiones[+excursionId]}
-                    favorita={this.props.favoritos.some(el => el === excursionId)}
+                    favorita={this.props.usuario.favoritos.some(el => el === excursionId)}
                     onPress={() => this.marcarFavorito(excursionId)}
                     comentarExcursion={() => this.comentarExcursion()}
                 />
@@ -238,7 +239,7 @@ class DetalleExcursion extends Component {
                         <View>
                             <Input
                                 placeholder='Autor'
-                                value = {this.props.route.params.user.nombre}
+                                value={this.props.usuario.nombre}
                                 onChangeText={value => this.setState({ autor: value })}
                                 leftIcon={
                                     <Icon name='user-o' type='font-awesome' />

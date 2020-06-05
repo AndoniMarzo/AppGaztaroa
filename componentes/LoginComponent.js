@@ -2,10 +2,23 @@ import React, { Component } from 'react';
 import { Alert, Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SocialIcon } from 'react-native-elements';
 
+import { connect } from 'react-redux';
+import { fetchUsuario } from '../redux/ActionCreators';
+
 import firebase from 'firebase';
 import * as Google from 'expo-google-app-auth';
 
 import { colorGaztaroaOscuro, firebaseConfig, ANDROID_CLIENT_ID, IOS_CLIENT_ID } from '../comun/comun';
+
+const mapStateToProps = state => {
+  return {
+    usuario: state.usuario,
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+  fetchUsuario: (usuarioID) => dispatch(fetchUsuario(usuarioID)),
+})
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -16,6 +29,7 @@ class LoginScreen extends Component {
     }
   }
 
+  // Comprobamos si el usuario introducido es correcto
   loginHandler = ({ navigate }) => {
     const url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=" + firebaseConfig.apiKey;
 
@@ -36,21 +50,25 @@ class LoginScreen extends Component {
       })
       .then(res => res.json())
       .then(parsedRes => {
-        console.log(parsedRes);
+        //console.log(parsedRes);
         if (!parsedRes.idToken) {
           Alert.alert("Error en la autenticación", "Email o contraseña incorrectos");
         } else {
+
+          // El usuario es correcto y se va a obtener su índice en la base de datos
           firebase.database()
             .ref('/usuarios')
             .once('value')
             .then(snapshot => {
               let usuario = snapshot.val().filter((usuarios) => usuarios.email === this.state.email)
-              navigate('Inicio', { user: usuario[0] })
+              this.props.fetchUsuario(usuario[0].indice);
+              navigate('Inicio')
             });
         }
       });
   };
 
+  // Comprobamos si el usuario Google es correcto
   signInWithGoogleAsync = async ({ navigate }) => {
     try {
       const result = await Google.logInAsync({
@@ -60,22 +78,32 @@ class LoginScreen extends Component {
       });
 
       if (result.type === 'success') {
+
+        // Comprobamos si el usuario de Google tenía una cuenta registrada
         firebase.database()
           .ref('/usuarios')
           .once('value')
           .then(snapshot => {
             if (snapshot.val() == null) {
-              // No hay usuarios
+
+              // No hay usuarios en la base de datos y se va a añadir el usuario
               const indice = 0
               this.registrarUsuario(indice, result, { navigate })
+
             } else {
-              // Hay usuarios
+
+              // Hay usuarios en la base de datos
               let usuario = snapshot.val().filter((usuarios) => usuarios.email === result.user.email)
+
               if (usuario.length > 0) {
-                // Usuario existente
-                navigate('Inicio', { user: usuario[0] })
+
+                // El usuario ya existe en la base de datos
+                this.props.fetchUsuario(usuario[0].indice);
+                navigate('Inicio')
+
               } else {
-                // Usuario no existente
+
+                // El usuario no existe en la base de datos y se va a añadir
                 let indice = 0;
                 if (snapshot.val() !== null) {
                   indice = snapshot.val().length
@@ -84,7 +112,6 @@ class LoginScreen extends Component {
               }
             }
           });
-
       } else {
         Alert.alert("Correo no válido");
       }
@@ -93,18 +120,23 @@ class LoginScreen extends Component {
     }
   }
 
+  // Creamos el array y lo añadimos a la base de datos
   registrarUsuario = (indice, result, { navigate }) => {
     const user = {
       "email": result.user.email,
       "nombre": result.user.name,
       "indice": indice,
+      "favoritos": [-1],
       "edad": "",
       "federado": false
     }
 
     firebase.database().ref("usuarios/" + indice)
       .set(user)
-    navigate('Inicio', { user: user })
+      .then(() => {
+        this.props.fetchUsuario(indice),
+          navigate('Inicio')
+      })
   }
 
   render() {
@@ -192,4 +224,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);

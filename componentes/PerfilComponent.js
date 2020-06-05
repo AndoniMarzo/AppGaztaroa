@@ -2,11 +2,26 @@ import React, { Component } from 'react';
 import { Button, Image, View, Text, StyleSheet, Modal, Switch } from 'react-native';
 import { Avatar, SocialIcon } from 'react-native-elements';
 import DatePicker from 'react-native-datepicker'
-import * as ImagePicker from 'expo-image-picker';
+
+import { connect } from 'react-redux';
+import { actualizarUsuario } from '../redux/ActionCreators';
+
+import firebase from 'firebase';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-import firebase from 'firebase';
+import * as ImagePicker from 'expo-image-picker';
+
 import { obtenerURL } from '../comun/comun'
+
+const mapStateToProps = state => {
+  return {
+    usuario: state.usuario,
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+  actualizarUsuario: (usuarioId, edad, federado) => dispatch(actualizarUsuario(usuarioId, edad, federado)),
+})
 
 class Perfil extends Component {
   constructor(props) {
@@ -14,17 +29,19 @@ class Perfil extends Component {
     this.state = {
       image: null,
       showModal: false,
-      edad: this.props.route.params.user.edad,
-      federado: this.props.route.params.user.federado,
+      edad: this.props.usuario.edad,
+      federado: this.props.usuario.federado,
       fecha: new Date()
     };
   }
 
+  // Cargamos la foto en caso de que la haya nada mas renderizar el componente
   componentDidMount() {
     this.getPermissionAsync();
     this.actualizarFoto();
   }
 
+  // Pedimos permiso para usar la galería
   getPermissionAsync = async () => {
     if (Constants.platform.ios) {
       const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -34,13 +51,15 @@ class Perfil extends Component {
     }
   };
 
+  // Obtenemos la foto de perfil del almacenamiento de firebase
   actualizarFoto = async () => {
-    obtenerURL('profile/' + this.props.route.params.user.indice + '.jpg')
+    obtenerURL('profile/' + this.props.usuario.indice + '.jpg')
       .then((result) => {
         this.setState({ image: result })
       })
   }
 
+  // Cambiamos la foto de perfil del usuario y la subimos a firebase
   fotoPerfil = () => {
     ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -62,6 +81,7 @@ class Perfil extends Component {
     });
   }
 
+  // Para subir la foto a firebase, se convierte a Blob
   uriToBlob = (uri) => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -83,10 +103,11 @@ class Perfil extends Component {
     });
   }
 
+  // Subimos la foto a firebase
   uploadToFirebase = (blob) => {
     return new Promise((resolve, reject) => {
       var storageRef = firebase.storage().ref();
-      storageRef.child('profile/' + this.props.route.params.user.indice + '.jpg').put(blob, {
+      storageRef.child('profile/' + this.props.usuario.indice + '.jpg').put(blob, {
         contentType: 'image/jpeg'
       }).then((snapshot) => {
         blob.close();
@@ -97,15 +118,17 @@ class Perfil extends Component {
     });
   }
 
+  // Volvemos a la pantalla de inicio de sesión 
   cerrarSesion = ({ navigate }) => {
     firebase.auth().signOut()
-    navigate('Login', { user: [] })
+    navigate('Login')
   }
 
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
   }
 
+  // Calculamos la edad del usuario
   calcularEdad = (fecha) => {
     const hoy = new Date();
     const cumple = new Date(fecha);
@@ -117,22 +140,16 @@ class Perfil extends Component {
     this.setState({ edad: edad });
   }
 
+  // Guardamos los nuevos datos del usuario
   guardarEstado = () => {
-    let user = this.props.route.params.user
-    user.edad = this.state.edad
-    user.federado = this.state.federado
-    firebase.database()
-      .ref('usuarios/' + user.indice)
-      .update({
-        edad: user.edad,
-        federado: user.federado,
-      })
+    this.props.actualizarUsuario(this.props.usuario.indice, this.state.edad, this.state.federado)
   }
 
   render() {
     let image = this.state.image;
-    const { user } = this.props.route.params
+    const user = this.props.usuario
     const { navigate } = this.props.navigation;
+    
     return (
       <View style={styles.contianer}>
         <View style={styles.cabecera}>
@@ -264,4 +281,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Perfil;
+export default connect(mapStateToProps, mapDispatchToProps)(Perfil);

@@ -4,19 +4,19 @@ import { ListItem } from 'react-native-elements';
 import Swipeout from 'react-native-swipeout';
 
 import { connect } from 'react-redux';
-import { borrarFavorito } from '../redux/ActionCreators';
+import { borrarFavoritos } from '../redux/ActionCreators';
 
 import IndicadorActividad from './IndicadorActividadComponent';
 
 const mapStateToProps = state => {
     return {
         excursiones: state.excursiones,
-        favoritos: state.favoritos
+        usuario: state.usuario,
     }
 }
 
 const mapDispatchToProps = dispatch => ({
-    borrarFavorito: (excursionId) => dispatch(borrarFavorito(excursionId)),
+    borrarFavoritos: (usuario, excursionId) => dispatch(borrarFavoritos(usuario, excursionId)),
 })
 
 class VistaFavoritos extends Component {
@@ -31,7 +31,7 @@ class VistaFavoritos extends Component {
                 },
                 {
                     text: "OK",
-                    onPress: () => this.props.borrarFavorito(item.id)
+                    onPress: () => this.props.borrarFavoritos(this.props.usuario, item.id)
                 }
             ],
             { cancelable: false }
@@ -75,15 +75,20 @@ class VistaFavoritos extends Component {
                 </View>
             );
         } else {
-            if (this.props.favoritos.length > 0) {
-                let favorito = [];
-                this.props.favoritos.sort()
-                this.props.favoritos.forEach(indice => {
-                    favorito.push(this.props.excursiones.excursiones[indice])
+            if (this.props.usuario.favoritos.length > 0) {
+                let excurisones_favoritas = [];
+                let array_favoritos = this.props.usuario.favoritos
+                array_favoritos.forEach((valor) => {
+                    console.log(valor)
+                    if (valor !== -1){
+                        excurisones_favoritas.push(this.props.excursiones.excursiones[valor])
+                    }
                 });
+                console.log(array_favoritos)
+                console.log(excurisones_favoritas)
                 return (
                     <FlatList
-                        data={favorito}
+                        data={excurisones_favoritas}
                         renderItem={renderFavoritoItem}
                         keyExtractor={item => item.id.toString()}
                     />

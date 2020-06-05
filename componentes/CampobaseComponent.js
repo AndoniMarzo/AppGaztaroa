@@ -29,7 +29,7 @@ const mapStateToProps = state => {
     excursiones: state.excursiones,
     comentarios: state.comentarios,
     cabeceras: state.cabeceras,
-    actividades: state.actividades
+    actividades: state.actividades,
   }
 }
 
@@ -85,7 +85,7 @@ function QuienesSomosNavegador({ navigation }) {
   );
 }
 
-function CalendarioNavegador({ navigation, route }) {
+function CalendarioNavegador({ navigation }) {
   return (
     <Stack.Navigator
       initialRouteName="Calendario"
@@ -108,14 +108,13 @@ function CalendarioNavegador({ navigation, route }) {
       <Stack.Screen
         name="DetalleExcursion"
         component={DetalleExcursion}
-        initialParams={{ user: route.params.user }}
         options={{ title: 'Detalle Excursión', }}
       />
     </Stack.Navigator>
   );
 }
 
-function ContactoNavegador({ navigation, route }) {
+function ContactoNavegador({ navigation }) {
   return (
     <Stack.Navigator
       initialRouteName="Contacto"
@@ -130,14 +129,13 @@ function ContactoNavegador({ navigation, route }) {
       <Stack.Screen
         name="Contacto"
         component={Contacto}
-        initialParams={{ user: route.params.user }}
         options={{ title: 'Contacto', }}
       />
     </Stack.Navigator>
   );
 }
 
-function ExcursionesFavoritasNavegador({ navigation, route }) {
+function ExcursionesFavoritasNavegador({ navigation }) {
   return (
     <Stack.Navigator
       initialRouteName="ExcursionesFavoritas"
@@ -157,14 +155,13 @@ function ExcursionesFavoritasNavegador({ navigation, route }) {
       <Stack.Screen
         name="DetalleExcursion"
         component={DetalleExcursion}
-        initialParams={{ user: route.params.user }}
         options={{ title: 'Detalle Excursión', }}
       />
     </Stack.Navigator>
   );
 }
 
-function PruebaEsfuerzoNavegador({ navigation, route }) {
+function PruebaEsfuerzoNavegador({ navigation }) {
   return (
     <Stack.Navigator
       initialRouteName="Prueba de Esfuerzo"
@@ -179,14 +176,13 @@ function PruebaEsfuerzoNavegador({ navigation, route }) {
       <Stack.Screen
         name="Prueba de Esfuerzo"
         component={PruebaEsfuerzo}
-        initialParams={{ user: route.params.user }}
         options={{ title: 'Prueba de esfuerzo', }}
       />
     </Stack.Navigator>
   );
 }
 
-function PerfilNavegador({ navigation, route }) {
+function PerfilNavegador({ navigation }) {
   return (
     <Stack.Navigator
       initialRouteName="Perfil"
@@ -201,7 +197,6 @@ function PerfilNavegador({ navigation, route }) {
       <Stack.Screen
         name="Perfil"
         component={Perfil}
-        initialParams={{ user: route.params.user }}
         options={{ title: 'Perfil', }}
       />
     </Stack.Navigator>
@@ -226,7 +221,7 @@ function CustomDrawerContent(props) {
   );
 }
 
-function DrawerNavegador({ route }) {
+function DrawerNavegador() {
   return (
     <Drawer.Navigator
       drawerStyle={{ backgroundColor: colorGaztaroaClaro, }}
@@ -247,35 +242,35 @@ function DrawerNavegador({ route }) {
           )
         }}
       />
-      <Drawer.Screen name="Calendario" component={CalendarioNavegador} initialParams={{ user: route.params.user }}
+      <Drawer.Screen name="Calendario" component={CalendarioNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name='calendar' type='font-awesome' size={24} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name="Contacto" component={ContactoNavegador} initialParams={{ user: route.params.user }}
+      <Drawer.Screen name="Contacto" component={ContactoNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name='address-card' type='font-awesome' size={22} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name="Excursiones favoritas" component={ExcursionesFavoritasNavegador} initialParams={{ user: route.params.user }}
+      <Drawer.Screen name="Excursiones favoritas" component={ExcursionesFavoritasNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name='thumbs-up' type='font-awesome' size={22} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name="Prueba de esfuerzo" component={PruebaEsfuerzoNavegador} initialParams={{ user: route.params.user }}
+      <Drawer.Screen name="Prueba de esfuerzo" component={PruebaEsfuerzoNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name='heartbeat' type='font-awesome' size={22} color={tintColor} />
           )
         }}
       />
-      <Drawer.Screen name={route.params.user.nombre} component={PerfilNavegador} initialParams={{ user: route.params.user }}
+      <Drawer.Screen name="Mi perfil" component={PerfilNavegador}
         options={{
           drawerIcon: ({ tintColor }) => (
             <Icon name='user' type='font-awesome' size={22} color={tintColor} />

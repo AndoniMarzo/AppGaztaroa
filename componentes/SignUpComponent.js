@@ -1,9 +1,22 @@
 import React, { Component } from 'react';
 import { Alert, Button, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { connect } from 'react-redux';
+import { fetchUsuario } from '../redux/ActionCreators';
+
 import firebase from 'firebase';
 
 import { colorGaztaroaOscuro, firebaseConfig } from '../comun/comun';
+
+const mapStateToProps = state => {
+  return {
+    usuario: state.usuario,
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+  fetchUsuario: (usuarioID) => dispatch(fetchUsuario(usuarioID)),
+})
 
 class SignUpScreen extends Component {
   constructor(props) {
@@ -17,6 +30,7 @@ class SignUpScreen extends Component {
     };
   }
 
+  // Comprobamos si las contraseñas introducidas coinciden para activar el botón
   comprobarPassword = () => {
     if ((this.state.password.length > 0) && (this.state.password === this.state.confirmPassword)) {
       this.setState({ valid: true })
@@ -25,6 +39,7 @@ class SignUpScreen extends Component {
     }
   }
 
+  // Comprobamos si el usuario introducido cumple las reglas o ya existe
   signupHandler = ({ navigate }) => {
     const url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=" + firebaseConfig.apiKey;
 
@@ -45,21 +60,28 @@ class SignUpScreen extends Component {
       })
       .then(res => res.json())
       .then(parsedRes => {
-        console.log(parsedRes);
+        //console.log(parsedRes);
         if (!parsedRes.idToken) {
           Alert.alert("Error en la autenticación", "Email o contraseña incorrectos");
         } else {
+
+          // El usuario es correcto y se le va a asociar un índice
           firebase.database()
             .ref('/usuarios')
             .once('value')
             .then(snapshot => {
+
               // Comprobamos si el usuario se había registrado con Google
               let usuario = snapshot.val().filter((usuarios) => usuarios.email === this.state.email)
               if (usuario.length > 0) {
-                // El usuario existe
-                navigate('Inicio', { user: usuario[0] })
+
+                // El usuario ya existía porque se había registrado con Google y se le asocia su índice
+                this.props.fetchUsuario(usuario[0].indice);
+                navigate('Inicio')
+
               } else {
-                // El usuario no existe
+
+                // El usuario no existe y se va a añadir a la base de datos
                 let indice = 0;
                 if (snapshot.val() !== null) {
                   indice = snapshot.val().length
@@ -69,13 +91,17 @@ class SignUpScreen extends Component {
                   "email": this.state.email,
                   "nombre": this.state.nombre,
                   "indice": indice,
+                  "favoritos": [-1],
                   "edad": "",
                   "federado": false
                 }
 
                 firebase.database().ref("usuarios/" + indice)
                   .set(user)
-                navigate('Inicio', { user: user })
+                  .then(() => {
+                    this.props.fetchUsuario(indice),
+                      navigate('Inicio')
+                  })
               }
             }
             )
@@ -172,4 +198,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SignUpScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(SignUpScreen);

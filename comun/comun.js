@@ -1,9 +1,12 @@
 import firebase from 'firebase';
 
 export const baseUrl = "https://andoni-react-native.firebaseio.com/";
+
 export const colorGaztaroaOscuro = '#015afc';
 export const colorGaztaroaClaro = '#c2d3da';
+
 export const email = "gaztaroa@gaztaroa.com";
+
 export const firebaseConfig = {
   apiKey: "AIzaSyCmXNNDrRLEUIPq39gzZ1Q7Jsw0VBf2RWg",
   authDomain: "andoni-react-native.firebaseapp.com",
@@ -17,16 +20,6 @@ export const firebaseConfig = {
 export const ANDROID_CLIENT_ID = "729997754954-5p4inr1v4mlpdaa0p40ad53c251lfj4l.apps.googleusercontent.com"
 export const IOS_CLIENT_ID = "729997754954-ih5o02h79f3urpdkanlpl6kspp46qjj3.apps.googleusercontent.com"
 
-
-/*export const obtenerURL = async (direccion) => {
-  console.log("estoy dentro")
-  await firebase.storage()
-    .ref(direccion)
-    .getDownloadURL().then((snapshot) => {
-      console.log(snapshot);
-      return (snapshot) });
-}*/
-
 export const obtenerURL = async (direccion) => {
   let storage = firebase.storage();
   let storageRef = storage.ref();
@@ -34,11 +27,3 @@ export const obtenerURL = async (direccion) => {
   let url = await spaceRef.getDownloadURL();
   return url
 }
-
-/*export const obtenerImagen = (imagen) => {
-    const storage = firebase.storage();
-    const pathReference = storage.ref("imagenes/" + imagen);
-      pathReference.getDownloadURL().then(function (url) {
-          return url
-    })
-};*/

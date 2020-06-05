@@ -2,20 +2,29 @@ import React, { Component } from 'react';
 import { Button, ScrollView, Text, View } from 'react-native';
 import { Card, Input } from 'react-native-elements';
 
+import { connect } from 'react-redux';
+
 import * as MailComposer from 'expo-mail-composer';
 
 import { email, colorGaztaroaOscuro } from '../comun/comun';
+
+const mapStateToProps = state => {
+    return {
+        usuario: state.usuario,
+    }
+}
 
 class Contacto extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            nombre: this.props.route.params.user.nombre,
-            email: this.props.route.params.user.email,
+            nombre: this.props.usuario.nombre,
+            email: this.props.usuario.email,
             comentario: [],
         }
     }
 
+    // Cargamos el correo con el contenido de los campos rellenados
     enviarCorreo = async () => {
         MailComposer.composeAsync({
             recipients: [email],
@@ -24,10 +33,11 @@ class Contacto extends Component {
         })
     }
 
+    // Reseteamos el estado después de mandar el correo
     resetearCampos = () => {
         this.setState({
-            nombre: this.props.route.params.user.nombre,
-            email: this.props.route.params.user.email,
+            nombre: this.props.usuario.nombre,
+            email: this.props.usuario.email,
             comentario: [],
         })
     }
@@ -83,4 +93,4 @@ class Contacto extends Component {
     }
 }
 
-export default Contacto;
+export default connect(mapStateToProps)(Contacto);

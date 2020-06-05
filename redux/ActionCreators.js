@@ -1,6 +1,7 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../comun/comun';
 
+// Comentarios
 export const fetchComentarios = () => (dispatch) => {
     return fetch(baseUrl + 'comentarios.json')
         .then(response => {
@@ -31,6 +32,19 @@ export const addComentarios = (comentarios) => ({
     payload: comentarios
 });
 
+export const postComentario = (excursionId, valoracion, autor, comentario) => (dispatch) => {
+    let dia = new Date().toISOString();
+    setTimeout(() => {
+        dispatch(addComentario(excursionId, valoracion, autor, comentario, dia));
+    }, 2000);
+};
+
+export const addComentario = (excursionId, valoracion, autor, comentario, dia) => ({
+    type: ActionTypes.ADD_COMENTARIO,
+    payload: { "autor": autor, "comentario": comentario, "dia": dia, "excursionId": excursionId, "id": "id", "valoracion": valoracion }
+});
+
+//Excursiones
 export const fetchExcursiones = () => (dispatch) => {
 
     dispatch(excursionesLoading());
@@ -68,6 +82,7 @@ export const addExcursiones = (excursiones) => ({
     payload: excursiones
 });
 
+// Cabeceras
 export const fetchCabeceras = () => (dispatch) => {
 
     dispatch(cabecerasLoading());
@@ -105,6 +120,7 @@ export const addCabeceras = (cabeceras) => ({
     payload: cabeceras
 });
 
+// Actividades
 export const fetchActividades = () => (dispatch) => {
 
     dispatch(actividadesLoading());
@@ -142,30 +158,42 @@ export const addActividades = (actividades) => ({
     payload: actividades
 });
 
-export const postFavorito = (excursionId) => (dispatch) => {
-    setTimeout(() => {
-        dispatch(addFavorito(excursionId));
-    }, 2000);
+// Usuario
+export const fetchUsuario = (usuarioId) => (dispatch) => {
+    return fetch(baseUrl + 'usuarios/' + usuarioId + '.json')
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                var error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        },
+            error => {
+                var errmess = new Error(error.message);
+                throw errmess;
+            })
+        .then(response => response.json())
+        .then(usuario => dispatch(cargarUsuario(usuario)))
 };
 
-export const addFavorito = (excursionId) => ({
-    type: ActionTypes.ADD_FAVORITO,
-    payload: excursionId
+export const cargarUsuario = (usuario) => ({
+    type: ActionTypes.CARGAR_USUARIO,
+    payload: usuario
 });
 
-export const postComentario = (excursionId, valoracion, autor, comentario) => (dispatch) => {
-    let dia = new Date().toISOString();
-    setTimeout(() => {
-        dispatch(addComentario(excursionId, valoracion, autor, comentario, dia));
-    }, 2000);
-};
-
-export const addComentario = (excursionId, valoracion, autor, comentario, dia) => ({
-    type: ActionTypes.ADD_COMENTARIO,
-    payload: { "autor": autor, "comentario": comentario, "dia": dia, "excursionId": excursionId, "id": "id", "valoracion": valoracion }
+export const actualizarUsuario = (usuarioId, edad, federado) => ({
+    type: ActionTypes.ACTUALIZAR_USUARIO,
+    payload: [usuarioId, edad, federado]
 });
 
-export const borrarFavorito = (excursionId) => ({
-    type: ActionTypes.BORRAR_FAVORITO,
-    payload: excursionId
+export const actualizarFavoritos = (usuario, excursionId) => ({
+    type: ActionTypes.ACTUALIZAR_FAVORITOS,
+    payload: [usuario, excursionId]
+});
+
+export const borrarFavoritos = (usuario, excursionId) => ({
+    type: ActionTypes.BORRAR_FAVORITOS,
+    payload: [usuario, excursionId]
 });

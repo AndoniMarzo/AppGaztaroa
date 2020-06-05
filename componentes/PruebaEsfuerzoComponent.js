@@ -3,16 +3,24 @@ import { Button, Modal, Picker, Platform, ScrollView, StyleSheet, Switch, Text, 
 import DatePicker from 'react-native-datepicker'
 import * as Animatable from 'react-native-animatable';
 
+import { connect } from 'react-redux';
+
 import * as Calendar from 'expo-calendar';
 
 import { colorGaztaroaOscuro } from '../comun/comun';
+
+const mapStateToProps = state => {
+    return {
+        usuario: state.usuario,
+    }
+}
 
 class PruebaEsfuerzo extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            edad: this.props.route.params.user.edad,
-            federado: this.props.route.params.user.federado,
+            edad: this.props.usuario.edad,
+            federado: this.props.usuario.federado,
             fecha: new Date().toString(),
             showModal: false
         }
@@ -20,7 +28,6 @@ class PruebaEsfuerzo extends Component {
 
     gestionarReserva() {
         console.log(JSON.stringify(this.state));
-        console.log(this.state.fecha)
         this.addCalendario();
         this.toggleModal();
     }
@@ -31,8 +38,8 @@ class PruebaEsfuerzo extends Component {
 
     resetForm() {
         this.setState({
-            edad: this.props.route.params.user.edad,
-            federado: this.props.route.params.user.edad,
+            edad: this.props.usuario.edad,
+            federado: this.props.usuario.federado,
             fecha: new Date(),
             showModal: false
         });
@@ -53,11 +60,14 @@ class PruebaEsfuerzo extends Component {
 
             let calendarioExpoID = 0;
             if (calendarioExpo.length > 0) {
+
                 // En caso de que exista el calendario, obtenemos la ID
                 calendarioExpoID = calendarioExpo[0].id
                 //console.log(calendarioExpoID)
                 //Calendar.deleteCalendarAsync(calendarioExpoID)
+
             } else {
+
                 // En caso de que no exista, creamos el calendario y obtenemos la ID
                 console.log("No existe ningún Expo Calendar")
                 calendarioExpoID = await this.createCalendar();
@@ -66,6 +76,8 @@ class PruebaEsfuerzo extends Component {
 
             // Añadimos la prueba en el calendario
             //console.log(calendarioExpoID)
+
+            // La duración de la prueba es de 30 minutos
             let start = new Date(this.state.fecha);
             let finish = new Date(this.state.fecha);
             finish.setHours(start.getHours(), start.getMinutes() + 30, 0, 0)
@@ -83,6 +95,7 @@ class PruebaEsfuerzo extends Component {
         }
     }
 
+    // En caso de que no exista, creamos el calendario
     createCalendar = async () => {
         const defaultCalendarSource =
             Platform.OS === 'ios'
@@ -102,12 +115,14 @@ class PruebaEsfuerzo extends Component {
         return newCalendarID
     }
 
+    // Obtiene los calendarios por defecto
     getDefaultCalendarSource = async () => {
         const calendars = await Calendar.getCalendarsAsync();
         const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
         return defaultCalendars[0].source;
     }
 
+    // Asignamos el rango correspondiente a la edad del usuario
     valorInicial = () => {
         let edad = this.state.edad
         if (edad < 20 || edad == "< 20") {
@@ -128,7 +143,6 @@ class PruebaEsfuerzo extends Component {
     }
 
     render() {
-        () => this.setState({edad: this.props.route.params.user.edad})
         return (
             <ScrollView>
                 <Animatable.View
@@ -258,4 +272,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default PruebaEsfuerzo;
+export default connect(mapStateToProps)(PruebaEsfuerzo);

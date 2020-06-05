@@ -55,7 +55,7 @@ class QuienesSomos extends Component {
                 <ScrollView>
                     <Historia />
                     <Card title="Actividades y recursos">
-                        <Text>{this.props.excursiones.errMess}</Text>
+                        <Text>{this.props.actividades.errMess}</Text>
                     </Card>
                 </ScrollView>
             );
