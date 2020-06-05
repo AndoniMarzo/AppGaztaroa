@@ -151,6 +151,7 @@ class LoginScreen extends Component {
           <TextInput
             placeholder="Email"
             autoCapitalize="none"
+            keyboardType= "email-address"
             value={this.state.email}
             onChangeText={(email) => this.setState({ email })}
             underlineColorAndroid={colorGaztaroaOscuro}

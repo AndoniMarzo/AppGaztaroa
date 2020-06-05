@@ -36,10 +36,10 @@ class PruebaEsfuerzo extends Component {
         this.setState({ showModal: !this.state.showModal });
     }
 
-    resetForm() {
+    resetForm(usuario) {
         this.setState({
-            edad: this.props.usuario.edad,
-            federado: this.props.usuario.federado,
+            edad: usuario.edad,
+            federado: usuario.federado,
             fecha: new Date(),
             showModal: false
         });
@@ -143,6 +143,7 @@ class PruebaEsfuerzo extends Component {
     }
 
     render() {
+        let usuario = this.props.usuario
         return (
             <ScrollView>
                 <Animatable.View
@@ -219,8 +220,8 @@ class PruebaEsfuerzo extends Component {
 
                 <Modal animationType={"slide"} transparent={false}
                     visible={this.state.showModal}
-                    onDismiss={() => { this.toggleModal(); this.resetForm(); }}
-                    onRequestClose={() => { this.toggleModal(); this.resetForm(); }}>
+                    onDismiss={() => { this.toggleModal(); this.resetForm(usuario); }}
+                    onRequestClose={() => { this.toggleModal(); this.resetForm(usuario); }}>
                     <View style={styles.modal}>
                         <Text style={styles.modalTitle}>Detalle de la reserva</Text>
                         <Text style={styles.modalText}>Edad: {this.state.edad}</Text>
@@ -228,7 +229,7 @@ class PruebaEsfuerzo extends Component {
                         <Text style={styles.modalText}>Día y hora: {this.state.fecha}</Text>
 
                         <Button
-                            onPress={() => { this.toggleModal(); this.resetForm(); }}
+                            onPress={() => { this.toggleModal(); this.resetForm(usuario); }}
                             color={colorGaztaroaOscuro}
                             title="Cerrar"
                         />

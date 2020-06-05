@@ -10,7 +10,6 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.10.3",
     "@react-native-community/masked-view": "0.1.6",
-    "@react-native-community/netinfo": "^5.9.2",
     "@react-native-firebase/app": "^7.0.1",
     "@react-native-firebase/database": "^7.0.1",
     "@react-native-firebase/storage": "^7.0.1",
